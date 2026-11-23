@@ -2,7 +2,7 @@
 import { ROUTES_AREA, SIDEBAR_NAV_AREA, PALETTE_AREA, SandboxedFrame, Button, host } from '@hermes/plugin-sdk'
 import { jsx, jsxs } from 'react/jsx-runtime'
 
-const URL = 'http://100.104.20.24:9000/'
+const URL = 'http://100.127.212.23:9000/'
 let openExternal = () => {}
 
 function OficinaPage() {
