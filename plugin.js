@@ -9,6 +9,7 @@ import { useEffect, useRef } from 'react'
 
 const BASE = 'http://100.127.212.23:9000'
 const ID_RE = /^[0-9A-Za-z_-]{6,80}$/
+const TOKEN_KEY = 'sz2-oficina-token'
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 function reply(frame, ok, msg) {
@@ -41,6 +42,20 @@ function OficinaPage() {
       const d = e.data
       if (!d || !ref.current || e.source !== ref.current.contentWindow) return
       const frame = ref.current
+      // Acceso de la Oficina: el iframe aislado no puede guardar nada, así que lo recuerda el Desktop.
+      if (d.type === 'sz2-token-get') {
+        let token = ''
+        try { token = window.localStorage.getItem(TOKEN_KEY) || '' } catch {}
+        frame.contentWindow?.postMessage({ type: 'sz2-token', token }, '*')
+        return
+      }
+      if (d.type === 'sz2-token-set') {
+        try {
+          const t = typeof d.token === 'string' ? d.token.slice(0, 300) : ''
+          t ? window.localStorage.setItem(TOKEN_KEY, t) : window.localStorage.removeItem(TOKEN_KEY)
+        } catch {}
+        return
+      }
       const id = typeof d.id === 'string' ? d.id : ''
       if (!ID_RE.test(id)) return
       const profile = typeof d.profile === 'string' ? d.profile : undefined
